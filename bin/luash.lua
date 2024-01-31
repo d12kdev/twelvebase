@@ -1,0 +1,1 @@
+cosshell.run("lua")
