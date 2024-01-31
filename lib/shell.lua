@@ -45,19 +45,22 @@ function tbshell.getCompletions()
             end
         end
     end
+
+    return result
 end
 
 function tbshell.start()
     term.clear()
     term.setCursorPos(1, 1)
-    term.write(_OSVER)
+    print(_OSVER)
     tbshell.start = nil
     _G.CWD = "/home"
     local _, screenHeight = term.getSize()
     local history = {}
+    local completion = CCCOMPLET
     while true do
         term.write("> ")
-        local command = read(nil, history)
+        local command = read(nil, history, function (text) return completion.choice(text, tbshell.getCompletions()) end)
         local canRun = true
         if command == "" then
             canRun = false

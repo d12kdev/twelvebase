@@ -2,6 +2,10 @@ import os
 import string
 import random
 
+if os.path.isdir("./.tbcache") == False:
+    print("Creating cache folder.")
+    os.mkdir("./.tbcache")
+
 print("Creating cache file...")
 
 lua_filename = ".tbcache/" + ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
@@ -9,7 +13,7 @@ lua_filename = ".tbcache/" + ''.join(random.choices(string.ascii_uppercase + str
 with open(lua_filename, 'w') as lua_file:
     for root, dirs, files in os.walk("."):
         relative_path = os.path.relpath(root, ".").replace('\\', '/')
-        if(relative_path == "." or relative_path == ".installer" or relative_path == ".tbcache"):
+        if(relative_path == "." or relative_path == ".installer" or ".tbcache" in relative_path or ".git" in relative_path):
             continue
         lua_file.write(f'shell.run("mkdir", "{relative_path}")\n')
         print("MKDIR " + relative_path)

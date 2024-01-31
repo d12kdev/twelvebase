@@ -1,3 +1,4 @@
+
 _G.graphx = {}
 
 _G.graphx.buffer = {}
@@ -111,11 +112,23 @@ function graphx.drawLine(startXY, endXY, color, layer)
     end
 end
 
+function graphx.cleanBuffer()
+    _G.graphx.buffer.layers = {
+        ["layer1"] = {},
+        ["layer2"] = {},
+        ["layer3"] = {},
+        ["layer4"] = {},
+    }
+end
 
 
-function graphx.renderFrame()
+function graphx.renderFrame(cleanBuffer)
     graphx.clearScreen()
-    for _, layer in pairs(graphx.buffer.layers) do
+
+    local layerNames = {"layer4", "layer3", "layer2", "layer1"}
+
+    for _, layerName in ipairs(layerNames) do
+        local layer = graphx.buffer.layers[layerName]
         for _, renderObject in ipairs(layer) do
             local x = renderObject[1]
             local y = renderObject[2]
@@ -136,9 +149,50 @@ function graphx.renderFrame()
                 local oldTextColor = term.getTextColor()
                 local oldBkgColor = term.getBackgroundColor()
                 term.setCursorPos(x,y)
+                local upLayers = {}
+                local downLayers = {}
+                local blayers = graphx.buffer.layers
+                if layer == blayers["layer1"] then
+                    upLayers = {}
+                elseif layer == blayers["layer2"] then
+                    upLayers = {blayers["layer1"]}
+                elseif layer == blayers["layer3"] then
+                    upLayers = {blayers["layer1"], blayers["layer2"]}
+                elseif layer == blayers["layer4"] then
+                    upLayers = {blayers["layer1"], blayers["layer2"], blayers["layer3"]}
+                end
+
+                if layer == blayers["layer4"] then
+                    downLayers = {}
+                elseif layer == blayers["layer3"] then
+                    downLayers = {blayers["layer4"]}
+                elseif layer == blayers["layer2"] then
+                    downLayers = {blayers["layer3"], blayers["layer4"]}
+                elseif layer == blayers["layer1"] then
+                    downLayers = {blayers["layer2"], blayers["layer3"], blayers["layer4"]}
+                end
                 for i = 1, #text do
                     local letter = text:sub(i,i)
-                    term.setBackgroundColor(term.getBackgroundColor())
+                    local cPosX, cPosY = term.getCursorPos()
+                    local downLayerPxFound = false
+                    local downLayerPxObj = nil
+                    for _, downLayer in ipairs(downLayers) do
+                        for _, downObj in ipairs(downLayer) do
+                            if downObj[1] == cPosX and downObj[2] == cPosY then
+                                downLayerPxFound = true
+                                downLayerPxObj = downObj
+                                break
+                            end
+                        end
+                        if downLayerPxFound then
+                            break
+                        end
+                    end
+                    local cBkgColor = term.getBackgroundColor()
+                    if downLayerPxFound and downLayerPxObj ~= nil then
+                        cBkgColor = downLayerPxObj[4]
+                    end
+                    term.setBackgroundColor(cBkgColor)
                     term.setTextColor(color)
                     term.write(letter)
                 end
@@ -149,4 +203,7 @@ function graphx.renderFrame()
         end
     end
     term.setCursorPos(1,1)
+    if cleanBuffer == nil or cleanBuffer == true then
+        graphx.cleanBuffer()
+    end
 end
