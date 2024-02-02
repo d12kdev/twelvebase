@@ -53,3 +53,37 @@ function cfgParser.parseString(inputString)
 
     return config
 end
+
+function cfgParser.__convertArray(arrayObj)
+    if type(arrayObj) ~= "table" then
+        err("Passed argument isn't a table. cfgParser (__ method)")
+    end
+    local result = "{ "
+    local isFirst = true
+    for _, obj in ipairs(arrayObj) do
+        if isFirst then
+            result = result .. obj
+            isFirst = false
+        else
+            result = result .. ", " .. obj
+        end
+    end
+
+    return result
+end
+
+function cfgParser.convert(configObj)
+    if type(configObj) ~= "table" then
+        err("Passed argument isn't a table. cfgParser")
+    end
+
+    local result = ""
+    for objName, obj in pairs(configObj) do
+        if type(obj) == "table" then
+            result = result .. objName .. " = " .. cfgParser.__convertArray(obj) .. "}\n"
+        else
+            result = result .. objName .. " = " .. obj .. "\n"
+        end
+    end
+    return result
+end

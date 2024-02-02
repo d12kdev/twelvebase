@@ -31,6 +31,7 @@ function pkgManager.install(packageDirectory)
 
     local modifyPath = fs.isDir(packageDirectory .. "/bin")
     local modifyLibs = fs.isDir(packageDirectory .. "/lib")
+    local modifySettings = fs.isDir(packageDirectory .. "/settings")
 
     if modifyLibs == false and modifyPath == false then
         err("INVALID PACKAGE: None of the directories (bin, lib) were modified. At least 1 dir must be modified")
@@ -42,6 +43,24 @@ function pkgManager.install(packageDirectory)
 
     if modifyPath then
         fop.file.copyForEach(packageDirectory .. "/bin", "pkgbin")
+    end
+
+    if modifySettings then
+        fop.file.copyForEach(packageDirectory .. "/settings", "settings")
+    end
+
+    if packageSettings.depend ~= nil then
+        for index, dependObj in ipairs(packageSettings.depend) do
+            if mat.isOdd(index) then
+                print(" -- Dependency --")
+                print("Name: " .. dependObj)
+            else
+                local decodedDesc = dependObj:gsub("#", " ")
+                print("Info: " .. decodedDesc)
+                print("----\n")
+            end
+        end
+        print("IMPORTANT!!Please install these dependencies to make the package work.\n")
     end
 
     print("Installation done.")
@@ -57,4 +76,8 @@ function pkgManager.install(packageDirectory)
         end
     end
 
+end
+
+function pkgManager.checkInstalled(packageName)
+    
 end

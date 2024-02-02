@@ -41,6 +41,9 @@ function graphx.clearScreen()
     term.setCursorPos(1,1)
 end
 
+function graphx.clsc()
+    graphx.clearScreen()
+end
 
 function graphx.clearAll()
 
