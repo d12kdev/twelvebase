@@ -1,6 +1,6 @@
 <h1 align="center" id="title">TwelveBase OS</h1>
 <p align="center">
-<img alt="Static Badge" src="https://img.shields.io/badge/by-d12kdev-blue?link=https%3A%2F%2Fgithub.com%2Fd12kdev">
+<a href="https://github.com/d12kdev"><img alt="Static Badge" src="https://img.shields.io/badge/by-d12kdev-blue?link=https%3A%2F%2Fgithub.com%2Fd12kdev"></a>
 <img alt="GitHub License" src="https://img.shields.io/github/license/d12kdev/TwelveBase">
 <img alt="GitHub Release" src="https://img.shields.io/github/v/release/d12kdev/twelvebase">
 </p>
