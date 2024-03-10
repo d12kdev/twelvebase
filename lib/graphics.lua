@@ -46,7 +46,8 @@ function graphx.clsc()
 end
 
 function graphx.clearAll()
-
+    graphx.cleanBuffer()
+    graphx.clearScreen()
 end
 
 function graphx.drawText(startXY, text, color, layer)
@@ -112,6 +113,30 @@ function graphx.drawLine(startXY, endXY, color, layer)
             err = err + dx
             y1 = y1 + sy
         end
+    end
+end
+
+function graphx.drawSquare(startXY, size, color, layer)
+    local x, y = startXY[1], startXY[2]
+    local endX, endY = x + size - 1, y + size - 1
+    local g = graphx
+
+    -- Draw top side
+    g.drawLine({x, y}, {endX, y}, color, layer)
+    -- Draw right side
+    g.drawLine({endX, y}, {endX, endY}, color, layer)
+    -- Draw bottom side
+    g.drawLine({x, endY}, {endX, endY}, color, layer)
+    -- Draw left side
+    g.drawLine({x, y}, {x, endY}, color, layer)
+end
+
+function graphx.drawFilledSquare(startXY, size, color, layer)
+    local x, y = startXY[1], startXY[2]
+    local endX, endY = x + size - 1, y + size - 1
+
+    for i = y, endY do
+        graphx.drawLine({x, i}, {endX, i}, color, layer)
     end
 end
 
