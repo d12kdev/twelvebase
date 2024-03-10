@@ -1,6 +1,7 @@
 import os
 import string
 import random
+import postbin
 
 if os.path.isdir("./.tbcache") == False:
     print("Creating cache folder.")
@@ -49,6 +50,9 @@ if INSTALLER_CONTENT != None and CACHE_CONTENT != None:
         ofile.write(INSTALLER_CONTENT)
     print("Deleting cache file...")
     os.remove(lua_filename)
+    print("Creating hastebin... (sorry, pastebin not supported yet)")
+    hkey = postbin.postSync(INSTALLER_CONTENT)
+    print(f"Hastebin key: {hkey}")
     print("Finished!")
 else:
     print("Something did go wrong")
