@@ -19,6 +19,7 @@ function TBBOOT.loadLibs()
         if file:match("%.lua$") then
             print("LOAD >>> " .. file)
             dofile(directory .. "/" .. file)
+            os.sleep(0.1)
         end
     end
 end
@@ -30,6 +31,7 @@ function TBBOOT.loadPkgLibs()
         if file:match("%.lua$") then
             print("LOAD >>> " .. file)
             dofile(directory .. "/" .. file)
+            os.sleep(0.1)
         end
     end
 end
@@ -90,6 +92,7 @@ term.clear()
 TBBOOT.tbHead()
 print("Loading libraries...")
 TBBOOT.loadLibs()
+os.sleep(1) -- pretty cool when u look at what it loaded
 term.clear()
 TBBOOT.tbHead()
 print("Registering paths...")
@@ -109,6 +112,7 @@ _G.MONITORS = TBBOOT.registerMonitors()
 TBBOOT.tbHead()
 print("Loading package libraries...")
 TBBOOT.loadPkgLibs()
+os.sleep(1)
 print("Cleaning up...")
 TBBOOT = nil
 LOADLIB = nil
