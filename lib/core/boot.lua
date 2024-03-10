@@ -125,4 +125,13 @@ for _, monitor in ipairs(MONITORS) do
     monitor.clear()
     monitor.setCursorPos(1,1)
 end
+term.clear()
+term.setCursorPos(1,1)
+print("Running on-start files...")
+for _, file in ipairs(fs.list("onstart")) do
+    if string.find(file, "%.lua$") then
+        local filePath = fs.combine("onstart", file)
+        pcall(dofile, filePath)
+    end
+end
 shell.start()
