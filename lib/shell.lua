@@ -1,5 +1,7 @@
 _G.tbshell = {}
 
+-- if you are user. do not edit this if you want to use this os as normal user
+
 function tbshell.execute(name, args)
     local CMDFOUND = false
     local CMDPATH = nil
