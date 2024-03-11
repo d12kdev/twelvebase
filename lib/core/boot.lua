@@ -97,7 +97,6 @@ term.clear()
 TBBOOT.tbHead()
 print("Registering paths...")
 _G.ENV_PATH = cfgParser.parse("./settings/paths.cfg").envPath
-_G.PROTECTED_PATH = cfgParser.parse("./settings/paths.cfg").protected
 _G._OSVER = OSINF.version
 _G.cosshell = _G.COSSHELL
 _G.shell = tbshell
