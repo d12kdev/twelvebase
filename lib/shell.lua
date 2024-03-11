@@ -49,6 +49,7 @@ function tbshell.getCompletions()
     return result
 end
 
+
 function tbshell.start()
     term.clear()
     term.setCursorPos(1, 1)
@@ -59,7 +60,7 @@ function tbshell.start()
     local history = {}
     local completion = CCCOMPLET
     while true do
-        term.write("> ")
+        term.write(_G.CWD.."> ")
         local command = read(nil, history, function (text) return completion.choice(text, tbshell.getCompletions()) end)
         local canRun = true
         if command == "" then
