@@ -116,6 +116,12 @@ function graphx.drawLine(startXY, endXY, color, layer)
     end
 end
 
+function graphx.fillScreen(color, terminal, layer)
+    local screenWidth, screenHeight = terminal.getSize()
+    graphx.drawFilledSquare({1, 1}, math.max(screenWidth, screenHeight), color, layer)
+end
+
+
 function graphx.drawSquare(startXY, size, color, layer)
     local x, y = startXY[1], startXY[2]
     local endX, endY = x + size - 1, y + size - 1
