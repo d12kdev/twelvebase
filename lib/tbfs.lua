@@ -9,6 +9,11 @@ function tbfs.cd(ipath)
         err("Tried to change cwd but it seems like the system is not initialized yet.")
     end
 
+    if ipath == "__ROOT" then
+        _G.CWD = ""
+        return true
+    end
+
     if ipath == "" then
         return true
     end
