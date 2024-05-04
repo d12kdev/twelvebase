@@ -3,6 +3,23 @@
 term.clear()
 term.setCursorPos(1,1)
 
+
+
+function startUpAnimation()
+    term.clear()
+    term.setCursorPos(1,1)
+    print("TwelveBase\n")
+    print("Are you sure ")
+    print(" Y ")
+    os.sleep(1)
+    term.clear()
+    term.setCursorPos(1,1)
+    print("TwelveBase Installation \n")
+    print("Are you sure you want to install the OS")
+    print(" YES ")
+    os.sleep(1)
+end
+
 function yN()
     local done = false
     local opt = false
@@ -30,8 +47,7 @@ function yN()
     return opt
 end
 
-print("TwelveBase Installation Program\n")
-print("Are you sure you want to install the OS (this will delete your startup folder or the startup file)?")
+startUpAnimation()
 local confirm = yN()
 
 if confirm ~= true then
@@ -46,6 +62,11 @@ end
 
 -- this will be replaced with the installation code by export.py
 {{TBEXPORT_CODE}}
+
+term.clear()
+term.setCursorPos(1,1)
+print("That was fast!")
+os.sleep(2)
 
 local isec = 0
 repeat

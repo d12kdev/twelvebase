@@ -31,6 +31,7 @@ function pkgManager.install(packageDirectory)
 
     local modifyPath = fs.isDir(packageDirectory .. "/bin")
     local modifyLibs = fs.isDir(packageDirectory .. "/lib")
+    local modifyHelp = fs.isDir(packageDirectory .. "/help")
     local modifySettings = fs.isDir(packageDirectory .. "/settings")
 
     if modifyLibs == false and modifyPath == false then
@@ -49,6 +50,10 @@ function pkgManager.install(packageDirectory)
         fop.file.copyForEach(packageDirectory .. "/settings", "settings")
     end
 
+    if modifyHelp then
+        fop.file.copyForEach(packageDirectory .. "/help", "pkghelp")
+    end
+
     if packageSettings.depend ~= nil then
         for index, dependObj in ipairs(packageSettings.depend) do
             if mat.isOdd(index) then
@@ -60,7 +65,11 @@ function pkgManager.install(packageDirectory)
                 print("----\n")
             end
         end
-        print("IMPORTANT!!Please install these dependencies to make the package work.\n")
+        local o = term.getTextColor()
+        term.setTextColor(colors.red)
+        print("\nIMPORTANT!! Please install these dependencies to make the package work.\n")
+        term.setTextColor(o)
+        o = nil
     end
 
     print("Installation done.")

@@ -25,8 +25,7 @@ function tbshell.execute(name, args)
         _G.COMMAND_ARGS = args
         local success = pcall(dofile, CMDPATH)
         if not success then
-            print("ERROR EXECUTING COMMAND")
-            return false
+            return "ERR"
         end
         return true
     else
@@ -78,6 +77,8 @@ function tbshell.start()
             local cmdStatus = tbshell.execute(commandName, cargs)
             if cmdStatus == false then
                 print("Command not found")
+            elseif cmdStatus == "ERR" then
+                print("There was an error while executing the command")
             else
                 table.insert(history, command)
             end

@@ -1,16 +1,16 @@
 _G.tbfs = {}
 
 function tbfs.getCwd()
-    return _G.CWD
+    return _G.CWD or "/"
 end
 
 function tbfs.cd(ipath)
     if _G.CWD == nil then
-        err("Tried to change cwd but it seems like the system is not initialized yet.")
+        error("System is not initialized.")
     end
 
     if ipath == "__ROOT" then
-        _G.CWD = ""
+        _G.CWD = "/"
         return true
     end
 
@@ -18,78 +18,106 @@ function tbfs.cd(ipath)
         return true
     end
 
-    local pathToCd = nil
-
-    if ipath == ".." or ipath == "../.." then
-        local cwdSegments = {}
+    local newCwd = _G.CWD
+    if ipath == ".." then
+        local segments = {}
         for segment in _G.CWD:gmatch("[^/]+") do
-            table.insert(cwdSegments, segment)
+            table.insert(segments, segment)
         end
-        local levelsUp = ipath == "../.." and 2 or 1
-        for i = 1, levelsUp do
-            table.remove(cwdSegments)
+        if #segments > 0 then
+            table.remove(segments)
+            newCwd = table.concat(segments, "/")
+        else
+            newCwd = "/"
         end
-        pathToCd = table.concat(cwdSegments, "/")
     elseif string.sub(ipath, 1, 2) == "./" then
-        if string.sub(_G.CWD, -1) == "/" then
-            _G.CWD = string.sub(_G.CWD, 1, -2)
-        end
-        pathToCd = _G.CWD .. string.sub(ipath, 2)
-    elseif string.sub(ipath, 1, 3) == "../" then
-        local cwdSegments = {}
-        for segment in _G.CWD:gmatch("[^/]+") do
-            table.insert(cwdSegments, segment)
-        end
-        local levelsUp = 1
-        for i = 4, #ipath, 3 do
-            if string.sub(ipath, i, i + 2) == "../" then
-                levelsUp = levelsUp + 1
-            else
-                break
-            end
-        end
-        for i = 1, levelsUp do
-            table.remove(cwdSegments)
-        end
-        pathToCd = table.concat(cwdSegments, "/") .. string.sub(ipath, levelsUp * 3 + 1)
+        newCwd = fs.combine(newCwd, string.sub(ipath, 2))
     else
-        pathToCd = ipath
+        newCwd = ipath
     end
 
-    if fs.isDir(pathToCd) then
-        _G.CWD = pathToCd
+    if newCwd == "" then
+        newCwd = "/"
+    end
+
+    if fs.isDir(newCwd) then
+        _G.CWD = newCwd
         return true
     else
-        err("Tried to cd but the target was not a directory or it was not found")
-        return false
+        error("The target path does not exist or is not a directory.")
     end
 end
 
-function tbfs.listDirGui(path)
+
+
+function tbfs.listDir(path)
     local oldCwd = tbfs.getCwd()
+
     if path ~= "." and path ~= "./" then
-        tbfs.cd(path)
+        local success, err = pcall(function() tbfs.cd(path) end)
+        if not success then
+            print("Error changing directory:", err)
+            return nil
+        end
     end
-    local files = fs.list(_G.CWD)
+    local files = fs.list(tbfs.getCwd())
     local dirs = {}
 
     for _, file in ipairs(files) do
-        if fs.isDir(fs.combine(_G.CWD, file)) then
+        if fs.isDir(fs.combine(tbfs.getCwd(), file)) then
             table.insert(dirs, file .. "/")
-        else
-            local oldclr = term.getTextColor()
-            term.setTextColor(colors.blue)
-            print(file)
-            term.setTextColor(oldclr)
         end
     end
 
-    for _, dir in ipairs(dirs) do
-        local oldclr = term.getTextColor()
-        term.setTextColor(colors.green)
-        print(dir)
-        term.setTextColor(oldclr)
+    local cdSuccess, cdErr = pcall(function() tbfs.cd(oldCwd) end)
+    if not cdSuccess then
+        print("Error returning to old CWD:", cdErr)
     end
-    tbfs.cd(oldCwd)
+
+    return {
+        dirs = dirs,
+        files = files
+    }
+end
+
+
+function tbfs.listDirGui(path, tablemode)
+    
+    local listed = tbfs.listDir(path)
+    local oldTermColor = term.getTextColor()
+    if tablemode == false then
+        local fileColor = colors.blue
+        local dirColor = colors.green
+    
+    
+        term.setTextColor(dirColor)
+        for _, dir in ipairs(listed.dirs) do
+           print(dir, " D") 
+        end
+    
+        term.setTextColor(fileColor)
+        for _, file in ipairs(listed.files) do
+            print(file, " F")
+        end
+    
+    elseif tablemode == true then
+        local finalTable = {}
+        for _, dir in ipairs(listed.dirs) do
+            table.insert(finalTable, {name = dir, type = "directory"})
+        end
+
+        for _, file in ipairs(listed.files) do
+            table.insert(finalTable, {name = file, type = "file"})
+        end
+
+        if(finalTable == {} or finalTable == nil) then
+            print("The directory is empty")
+            return
+        end
+
+        
+        print(tutils.table(finalTable))
+    end
+    term.setTextColor(oldTermColor)
 end
 

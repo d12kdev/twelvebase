@@ -92,11 +92,14 @@ term.clear()
 TBBOOT.tbHead()
 print("Loading libraries...")
 TBBOOT.loadLibs()
-os.sleep(1) -- pretty cool when u look at what it loaded
+os.sleep(0.2) -- pretty cool when u look at what it loaded
 term.clear()
 TBBOOT.tbHead()
 print("Registering paths...")
-_G.ENV_PATH = cfgParser.parse("./settings/paths.cfg").envPath
+local pcfg = cfgParser.parse("./settings/paths.cfg")
+_G.ENV_PATH = pcfg.envPath
+_G.HELP_PATH = pcfg.helpPath
+pcfg = nil
 _G._OSVER = OSINF.version
 _G.cosshell = _G.COSSHELL
 _G.shell = tbshell
@@ -120,10 +123,43 @@ COSSHELL = nil
 term.clear()
 print("Have a good day!")
 os.sleep(1)
+
+function monTest(monitor)
+    local colorList = {
+        colors.white,
+        colors.orange,
+        colors.magenta,
+        colors.lightBlue,
+        colors.yellow,
+        colors.lime,
+        colors.pink,
+        colors.gray,
+        colors.lightGray,
+        colors.cyan,
+        colors.purple,
+        colors.blue,
+        colors.brown,
+        colors.green,
+        colors.red,
+        colors.black
+    }
+    local oldTerminal = term.current()
+    term.redirect(monitor)
+    for _, color in ipairs(colorList) do
+        graphx.fillScreen(color, graphx.buffer.layers.layer1)
+        graphx.renderFrame(true)
+        os.sleep(0.01)
+    end
+    graphx.clearAll()
+    term.redirect(oldTerminal)
+end
+
 for _, monitor in ipairs(MONITORS) do
+    monTest(monitor)
     monitor.clear()
     monitor.setCursorPos(1,1)
 end
+monTest = nil
 term.clear()
 term.setCursorPos(1,1)
 print("Running on-start files...")
