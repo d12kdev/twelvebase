@@ -1,5 +1,6 @@
 
 _G.graphx = {}
+_G.graphx.animations = {}
 
 _G.graphx.buffer = {}
 _G.graphx.buffer.layers = {
@@ -7,6 +8,7 @@ _G.graphx.buffer.layers = {
     ["layer2"] = {},
     ["layer3"] = {},
     ["layer4"] = {},
+    ["layer5"] = {}
 }
 
 _G.graphx.buffer.system_layer = {}
@@ -75,6 +77,10 @@ function graphx.drawLine(startXY, endXY, color, layer)
 
     if layer == nil then
         layer = graphx.buffer.layers["layer1"]
+    end
+
+    if color == nil then
+        color = colors.white
     end
 
     local dx = math.abs(x2 - x1)
@@ -146,12 +152,44 @@ function graphx.drawFilledSquare(startXY, size, color, layer)
     end
 end
 
+function graphx.drawRectangle(startXY, endXY, color, layer)
+    local x1, y1 = startXY[1], startXY[2]
+    local x2, y2 = endXY[1], endXY[2]
+
+    if layer == nil then
+        layer = graphx.buffer.layers["layer1"]
+    end
+
+    -- Draw the four sides of the rectangle
+    graphx.drawLine({x1, y1}, {x2, y1}, color, layer) -- Top
+    graphx.drawLine({x1, y2}, {x2, y2}, color, layer) -- Bottom
+    graphx.drawLine({x1, y1}, {x1, y2}, color, layer) -- Left
+    graphx.drawLine({x2, y1}, {x2, y2}, color, layer) -- Right
+end
+
+function graphx.drawFilledRectangle(startXY, endXY, color, layer)
+    local x1, y1 = startXY[1], startXY[2]
+    local x2, y2 = endXY[1], endXY[2]
+
+    if layer == nil then
+        layer = graphx.buffer.layers["layer1"]
+    end
+
+    -- for every line loop
+    for y = y1, y2 do
+        graphx.drawLine({x1, y}, {x2, y}, color, layer) -- Draw a horizontal line
+    end
+end
+
+
+
 function graphx.cleanBuffer()
     _G.graphx.buffer.layers = {
         ["layer1"] = {},
         ["layer2"] = {},
         ["layer3"] = {},
         ["layer4"] = {},
+        ["layer5"] = {}
     }
 end
 
@@ -159,7 +197,7 @@ end
 function graphx.renderFrame(cleanBuffer)
     graphx.clearScreen()
 
-    local layerNames = {"layer4", "layer3", "layer2", "layer1"}
+    local layerNames = {"layer5","layer4", "layer3", "layer2", "layer1"}
 
     for _, layerName in ipairs(layerNames) do
         local layer = graphx.buffer.layers[layerName]
@@ -194,16 +232,20 @@ function graphx.renderFrame(cleanBuffer)
                     upLayers = {blayers["layer1"], blayers["layer2"]}
                 elseif layer == blayers["layer4"] then
                     upLayers = {blayers["layer1"], blayers["layer2"], blayers["layer3"]}
+                elseif layer == blayers["layer5"] then
+                    upLayers = {blayers["layer1"], blayers["layer2"], blayers["layer3"], blayers["layer4"]}
                 end
-
-                if layer == blayers["layer4"] then
+                
+                if layer == blayers["layer5"] then
                     downLayers = {}
+                elseif layer == blayers["layer4"] then
+                    downLayers = {blayers["layer5"]}
                 elseif layer == blayers["layer3"] then
-                    downLayers = {blayers["layer4"]}
+                    downLayers = {blayers["layer4"], blayers["layer5"]}
                 elseif layer == blayers["layer2"] then
-                    downLayers = {blayers["layer3"], blayers["layer4"]}
+                    downLayers = {blayers["layer3"], blayers["layer4"], blayers["layer5"]}
                 elseif layer == blayers["layer1"] then
-                    downLayers = {blayers["layer2"], blayers["layer3"], blayers["layer4"]}
+                    downLayers = {blayers["layer2"], blayers["layer3"], blayers["layer4"], blayers["layer5"]}
                 end
                 for i = 1, #text do
                     local letter = text:sub(i,i)
@@ -239,5 +281,35 @@ function graphx.renderFrame(cleanBuffer)
     term.setCursorPos(1,1)
     if cleanBuffer == nil or cleanBuffer == true then
         graphx.cleanBuffer()
+    end
+end
+
+function graphx.animations.rollingText(text, color, duration, line)
+    local function getTermSize()
+        local width, height = term.getSize()
+        return width, height
+    end
+    local width, height = getTermSize()
+
+    local yPos = line
+    if line == "center" then
+        yPos = height / 2
+    end
+    local textLength = #text
+    local totalSteps = width + textLength
+    local stepDuration = duration / totalSteps
+
+    for i = 1, totalSteps do
+        graphx.clearScreen()
+
+        local startX = i - textLength
+
+        if startX >= 1 then
+            graphx.drawText(graphx.packXY(startX, yPos), text, color)
+        end
+
+        graphx.renderFrame()
+
+        os.sleep(stepDuration)
     end
 end

@@ -1,1 +1,1 @@
-os.shutdown()
+shutdown()

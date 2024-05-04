@@ -101,11 +101,23 @@ _G.ENV_PATH = pcfg.envPath
 _G.HELP_PATH = pcfg.helpPath
 pcfg = nil
 _G._OSVER = OSINF.version
+_G._CEVER = OSINF.ce_ver
 _G.cosshell = _G.COSSHELL
 _G.shell = tbshell
 _G.colors = _G.COSCOLORS
 _G.reboot = function ()
+    graphx.animations.rollingText("Rebooting", colors.white, 2, "center")
+    graphx.fillScreen(colors.gray, graphx.buffer.layers.layer1)
+    graphx.renderFrame()
+    os.sleep(1)
     os.reboot()
+end
+_G.shutdown = function ()
+    graphx.animations.rollingText("Bye!", colors.white, 6, "center")
+    graphx.fillScreen(colors.gray, graphx.buffer.layers.layer1)
+    graphx.renderFrame()
+    os.sleep(1)
+    os.shutdown()
 end
 term.clear()
 TBBOOT.tbHead()
@@ -121,8 +133,6 @@ LOADLIB = nil
 OSINF = nil
 COSSHELL = nil
 term.clear()
-print("Have a good day!")
-os.sleep(1)
 
 function monTest(monitor)
     local colorList = {
@@ -160,6 +170,11 @@ for _, monitor in ipairs(MONITORS) do
     monitor.setCursorPos(1,1)
 end
 monTest = nil
+dofile("lib/core/customentry.lua")
+customentry()
+if _G.CUSTOMENTRY == true then
+    shutdown()
+end
 term.clear()
 term.setCursorPos(1,1)
 print("Running on-start files...")

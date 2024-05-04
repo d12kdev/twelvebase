@@ -114,3 +114,12 @@ function tutils.toBool(str)
 
     return tbl[str]
 end
+
+function tutils.is_number(str)
+    local num = tonumber(str)
+    return num ~= nil
+end
+
+function tutils.flipBool(bool)
+    return not bool
+end
